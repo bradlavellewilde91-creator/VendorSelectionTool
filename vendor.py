@@ -420,7 +420,7 @@ with st.sidebar:
         pricing_selection_list = st.session_state.get('pricing_selection_list', ["All"])
 
     st.markdown("----")
-    st.write("Functionality Requirement Filter")
+    st.write("Mandatory Functionality Filter")
     # Function selection will be built later once scoring is done; store selection in session_state for persistence
     func_selection = st.session_state.get('func_selection', [])
 
@@ -496,7 +496,7 @@ if criteria_file is not None and vendor_df is not None:
         # Use session_state stored selection if present
         with st.sidebar:
             func_selection = st.multiselect(
-                "Select required functions (vendors must meet ALL matching rows)",
+                "Select Mandatory functions (vendors must meet ALL matching rows)",
                 options=available_functions,
                 default=st.session_state.get('func_selection', []),
                 key='func_selection',
