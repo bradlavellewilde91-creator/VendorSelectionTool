@@ -314,7 +314,7 @@ def display_df_no_index(df: pd.DataFrame, height: int | None = None):
     except Exception:
         pass
 
-    # Render as HTML with CSS that respects light/dark (stronger colors)
+    # Render as HTML with CSS that respects light/dark
     try:
         html_table = df2.to_html(index=False, border=0, classes="mytable")
         css = """
@@ -468,11 +468,12 @@ with st.sidebar:
         st.info("Upload vendor file to enable Pricing Model filter.")
 
     st.markdown("---")
-    # Mandatory Functionality placeholder (actual multiselect is rendered into sidebar after scoring below)
-    st.write("Mandatory Functionality (STRICT)")
-    st.write("After you upload criteria, select required functions (options appear post-scoring).")
+    # Mandatory Functionality placeholder location (fixed)
+    func_placeholder = st.empty()
+    func_placeholder.write("Mandatory Functionality (STRICT)")
+    func_placeholder.write("After you upload criteria, select required functions (options appear post-scoring).")
     if st.session_state.get("func_selection"):
-        st.write(f"{len(st.session_state.get('func_selection'))} function(s) selected")
+        func_placeholder.write(f"{len(st.session_state.get('func_selection'))} function(s) selected")
 
     st.markdown("---")
     # CultureHost last
@@ -560,11 +561,11 @@ if criteria_file is not None and vendor_df is not None:
     except Exception:
         available_functions = sorted(pd.unique(detailed_df["Function"].astype(str))) if not detailed_df.empty else []
 
-    # Render the actual Mandatory Functionality multiselect into the sidebar now that we know available options
+    # Replace the placeholder with the actual multiselect in the sidebar (preserves ordering)
     if available_functions:
         # IMPORTANT: call multiselect with key='func_selection' so the widget writes into session_state automatically.
-        # Do NOT assign the widget return into st.session_state manually.
-        st.sidebar.multiselect(
+        # Use the earlier-created placeholder to ensure this control appears in the intended sidebar location.
+        func_placeholder.multiselect(
             "Select Mandatory functions (vendors must meet ALL matching rows)",
             options=available_functions,
             default=st.session_state.get("func_selection", []),
