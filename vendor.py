@@ -209,6 +209,7 @@ def calculate_scores(vendor_df, criteria_df):
     vendor_scores_acc = {str(v): {"score": 0.0, "weight": 0.0, "areas": {}} for v in vendor_df[vendor_col_actual].astype(str).tolist()}
     detailed_records = []
 
+    # Iterate criteria rows (supports multiple rows with same Function)
     for _, crit in criteria_df.iterrows():
         func_orig = crit[crit_map["function"]]
         req_orig = crit[crit_map["requirement"]]
@@ -277,6 +278,7 @@ def calculate_scores(vendor_df, criteria_df):
 def convert_df(df):
     return df.to_csv(index=False).encode("utf-8")
 
+# universal display helper that ensures no left-hand index is shown and enforces readable colors.
 def display_df_no_index(df: pd.DataFrame, height: int | None = None):
     if df is None:
         return
@@ -312,7 +314,7 @@ def display_df_no_index(df: pd.DataFrame, height: int | None = None):
     except Exception:
         pass
 
-    # Render as HTML with CSS that respects light/dark
+    # Render as HTML with CSS that respects light/dark (stronger colors)
     try:
         html_table = df2.to_html(index=False, border=0, classes="mytable")
         css = """
@@ -402,7 +404,7 @@ criteria_file = st.file_uploader("Upload your System Criteria CSV", type=["csv",
 
 # -------------------------------
 # Sidebar filters (reordered & separated)
-# Order: Number of vendors (top_n) -> Pricing Model -> Mandatory Functionality -> CultureHost
+# Order: Top-N slider -> Pricing Model -> Mandatory Functionality -> CultureHost
 # -------------------------------
 with st.sidebar:
     st.header("Filters & Controls")
@@ -413,23 +415,23 @@ with st.sidebar:
         st.session_state["pricing_selection_list_display"] = ["All"]
         st.session_state["func_selection"] = []
         st.session_state["top_n"] = 5
-        # clear any stored pricing map
         if "_pricing_display_map" in st.session_state:
             del st.session_state["_pricing_display_map"]
         st.experimental_rerun()
 
     st.markdown("---")
-    # Top-N control at the top of sidebar
-    st.number_input(
+    # Top-N slider at top of sidebar
+    st.slider(
         "Number of vendors to display (Top N)",
         min_value=1,
+        max_value=100,
         value=st.session_state.get("top_n", 5),
         key="top_n",
         help="How many top vendors to show (applies after scoring and filtering)."
     )
 
     st.markdown("---")
-    # Pricing Model filter
+    # Pricing Model filter next
     st.write("Pricing Model filter")
     if vendor_df is not None:
         pricing_col_actual = find_col_case_insensitive(vendor_df, "Pricing Model")
@@ -440,7 +442,7 @@ with st.sidebar:
             options_display = ["All"] + [f"{v} ({counts.get(v.lower(),0)})" for v in unique_vals]
             display_to_value = {f"{v} ({counts.get(v.lower(),0)})": v for v in unique_vals}
             st.session_state["_pricing_display_map"] = display_to_value
-            # show multiselect (widget writes into session_state['pricing_selection_list_display'])
+            # multiselect writes its value into session_state['pricing_selection_list_display']
             st.multiselect(
                 "Filter by Pricing Model",
                 options=options_display,
@@ -448,7 +450,7 @@ with st.sidebar:
                 key="pricing_selection_list_display",
                 help="Choose one or more Pricing Models to filter vendors (All = no filter)"
             )
-            # Map the display selection to canonical selection for later filtering
+            # Map the display selection into canonical list for later filtering
             display_selected = st.session_state.get("pricing_selection_list_display", ["All"])
             if display_selected and "All" in display_selected:
                 st.session_state["pricing_selection_list"] = ["All"]
@@ -466,9 +468,9 @@ with st.sidebar:
         st.info("Upload vendor file to enable Pricing Model filter.")
 
     st.markdown("---")
-    # Mandatory Functionality placeholder; actual multiselect rendered from main after scoring
+    # Mandatory Functionality placeholder (actual multiselect is rendered into sidebar after scoring below)
     st.write("Mandatory Functionality (STRICT)")
-    st.write("After you upload criteria, select required functions below (options appear post-scoring).")
+    st.write("After you upload criteria, select required functions (options appear post-scoring).")
     if st.session_state.get("func_selection"):
         st.write(f"{len(st.session_state.get('func_selection'))} function(s) selected")
 
@@ -558,10 +560,10 @@ if criteria_file is not None and vendor_df is not None:
     except Exception:
         available_functions = sorted(pd.unique(detailed_df["Function"].astype(str))) if not detailed_df.empty else []
 
-    # Render the actual Mandatory Functionality multiselect into sidebar now that we know available options
+    # Render the actual Mandatory Functionality multiselect into the sidebar now that we know available options
     if available_functions:
-        # IMPORTANT: do NOT assign the widget return into st.session_state with same key.
-        # Call multiselect with key='func_selection' so Streamlit writes the value into session_state automatically.
+        # IMPORTANT: call multiselect with key='func_selection' so the widget writes into session_state automatically.
+        # Do NOT assign the widget return into st.session_state manually.
         st.sidebar.multiselect(
             "Select Mandatory functions (vendors must meet ALL matching rows)",
             options=available_functions,
@@ -642,7 +644,7 @@ if criteria_file is not None and vendor_df is not None:
     else:
         st.info("No filters active — showing all scored vendors")
 
-    # Use single Top-N control from sidebar (st.session_state['top_n'])
+    # Use single Top-N slider value from sidebar (st.session_state['top_n'])
     if summary_df.empty:
         st.info("No scored vendors to display.")
     else:
