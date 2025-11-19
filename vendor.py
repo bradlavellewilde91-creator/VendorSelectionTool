@@ -422,7 +422,7 @@ with st.sidebar:
     st.markdown("---")
     # Top-N slider at top of sidebar
     st.slider(
-        "Number of vendors to display (Top N)",
+        "Number of vendors to display",
         min_value=1,
         max_value=100,
         value=st.session_state.get("top_n", 5),
