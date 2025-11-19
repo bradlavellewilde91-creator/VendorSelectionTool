@@ -444,7 +444,6 @@ with st.sidebar:
             st.session_state["_pricing_display_map"] = display_to_value
             # multiselect writes its value into session_state['pricing_selection_list_display']
             st.multiselect(
-                "Filter by Pricing Model",
                 options=options_display,
                 default=st.session_state.get("pricing_selection_list_display", ["All"]),
                 key="pricing_selection_list_display",
