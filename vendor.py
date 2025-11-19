@@ -389,7 +389,7 @@ with st.sidebar:
         st.experimental_rerun()
 
     st.markdown("----")
-    filter_ch_yes = st.checkbox("Only show vendors with CultureHost Connection == Yes", value=st.session_state.get('filter_ch_yes', False), key='filter_ch_yes')
+    filter_ch_yes = st.checkbox("CultureHost Connection", value=st.session_state.get('filter_ch_yes', False), key='filter_ch_yes')
 
     # Pricing model multi-select will be populated after vendor_df is available; provide placeholder if not
     pricing_col_actual = None
@@ -420,7 +420,7 @@ with st.sidebar:
         pricing_selection_list = st.session_state.get('pricing_selection_list', ["All"])
 
     st.markdown("----")
-    st.write("Functionality requirement (STRICT): vendors must meet ALL matching criteria rows for each selected function.")
+    st.write("Functionality Requirement Filter")
     # Function selection will be built later once scoring is done; store selection in session_state for persistence
     func_selection = st.session_state.get('func_selection', [])
 
