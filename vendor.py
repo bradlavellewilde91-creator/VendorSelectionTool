@@ -420,7 +420,7 @@ with st.sidebar:
         pricing_selection_list = st.session_state.get('pricing_selection_list', ["All"])
 
     st.markdown("----")
-    st.write("Mandatory Functionality Filter")
+    st.write("Mandatory Functionality")
     # Function selection will be built later once scoring is done; store selection in session_state for persistence
     func_selection = st.session_state.get('func_selection', [])
 
