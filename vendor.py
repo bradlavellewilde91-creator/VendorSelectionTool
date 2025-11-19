@@ -432,7 +432,7 @@ with st.sidebar:
 
     st.markdown("---")
     # Pricing Model filter next
-    st.write("Pricing Model filter")
+    st.write("Pricing Model")
     if vendor_df is not None:
         pricing_col_actual = find_col_case_insensitive(vendor_df, "Pricing Model")
         if pricing_col_actual is not None:
@@ -478,7 +478,7 @@ with st.sidebar:
     st.markdown("---")
     # CultureHost last
     st.checkbox(
-        "Only show vendors with CultureHost Connection == Yes",
+        "CultureHost Connection",
         value=st.session_state.get("filter_ch_yes", False),
         key="filter_ch_yes"
     )
@@ -566,7 +566,7 @@ if criteria_file is not None and vendor_df is not None:
         # IMPORTANT: call multiselect with key='func_selection' so the widget writes into session_state automatically.
         # Use the earlier-created placeholder to ensure this control appears in the intended sidebar location.
         func_placeholder.multiselect(
-            "Select Mandatory functions (vendors must meet ALL matching rows)",
+            "Mandatory functions (vendors must meet ALL matching rows)",
             options=available_functions,
             default=st.session_state.get("func_selection", []),
             key="func_selection",
