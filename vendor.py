@@ -422,7 +422,7 @@ with st.sidebar:
     st.markdown("---")
     # Top-N slider at top of sidebar
     st.slider(
-        "Number of vendors to display",
+        "Number of vendors to display (Top N)",
         min_value=1,
         max_value=100,
         value=st.session_state.get("top_n", 5),
@@ -432,7 +432,7 @@ with st.sidebar:
 
     st.markdown("---")
     # Pricing Model filter next
-    st.write("Pricing Model")
+    st.write("Pricing Model filter")
     if vendor_df is not None:
         pricing_col_actual = find_col_case_insensitive(vendor_df, "Pricing Model")
         if pricing_col_actual is not None:
@@ -444,6 +444,7 @@ with st.sidebar:
             st.session_state["_pricing_display_map"] = display_to_value
             # multiselect writes its value into session_state['pricing_selection_list_display']
             st.multiselect(
+                "Filter by Pricing Model",
                 options=options_display,
                 default=st.session_state.get("pricing_selection_list_display", ["All"]),
                 key="pricing_selection_list_display",
@@ -565,7 +566,7 @@ if criteria_file is not None and vendor_df is not None:
         # IMPORTANT: call multiselect with key='func_selection' so the widget writes into session_state automatically.
         # Use the earlier-created placeholder to ensure this control appears in the intended sidebar location.
         func_placeholder.multiselect(
-            "Mandatory functions (vendors must meet ALL matching rows)",
+            "Select Mandatory functions (vendors must meet ALL matching rows)",
             options=available_functions,
             default=st.session_state.get("func_selection", []),
             key="func_selection",
